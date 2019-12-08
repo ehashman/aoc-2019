@@ -35,3 +35,5 @@
       ((eqv? i -1) p)))
 
 (set-current-input-port (open-input-file "input/d02"))
+(display (run-program (parse-program (read-line))))
+(newline)
