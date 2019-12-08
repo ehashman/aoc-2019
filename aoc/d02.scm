@@ -21,12 +21,12 @@
            (v1  (vector-ref p l1))
            (v2  (vector-ref p l2)))
       (vector-set! p dst (f v1 v2)))
-    #t))
+    (+ i 4)))
 
 (define (run-inst i p)
   (case (vector-ref p i)
     ((1) (eval-inst i p +))
     ((2) (eval-inst i p *))
-    ((99) #f)))
+    ((99) -1)))
 
 (set-current-input-port (open-input-file "input/d02"))

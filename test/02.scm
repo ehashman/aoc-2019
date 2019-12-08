@@ -15,11 +15,11 @@
 (define p (vector-copy program))
 
 ; i = 0, opcode is 1, add
-(test-eq (eval-inst 0 p +) #t)
+(test-eq (eval-inst 0 p +) 4)
 (test-equal p #(1 9 10 70 2 3 11 0 99 30 40 50))
 
 ; i = 4, opcode is 2, multiply
-(test-eq (eval-inst 4 p *) #t)
+(test-eq (eval-inst 4 p *) 8)
 (test-equal p #(3500 9 10 70 2 3 11 0 99 30 40 50))
 
 (test-end "puzzle-1")
