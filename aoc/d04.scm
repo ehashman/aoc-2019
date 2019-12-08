@@ -7,6 +7,7 @@
 
 (define-module (aoc d04)
   #:export (rule-3
+            rule-3b
             rule-4))
 
 (use-modules (srfi srfi-1))
@@ -34,6 +35,12 @@
              '(0 . #f)
              (get-digits n))))
 
+;; Rule 3b: If it has repeated digits, must have a group of at most 2
+(define (rule-3b n)
+  (let* ((digits (get-digits n))
+         (num-digits (lambda (digit) (count (lambda (x) (eqv? x digit)) digits))))
+    (list? (memv 2 (map num-digits digits)))))  ; coerce matched list to bool
+
 ;; Rule 4: Digits must be in ascending order
 (define (rule-4 n)
   (cdr (fold (lambda (l r)
@@ -42,6 +49,6 @@
              (get-digits n))))
 
 (display
- (length (filter (lambda (x) (and (rule-3 x) (rule-4 x)))
+ (length (filter (lambda (x) (and (rule-3b x) (rule-4 x)))
                  (iota (- upper-input lower-input) lower-input))))
 (newline)

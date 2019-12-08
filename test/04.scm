@@ -21,3 +21,12 @@
 (test-eq (rule-4 223450) #f)
 
 (test-end "puzzle-1")
+
+(test-begin "puzzle-2")
+
+(test-eq (rule-3b 112233) #t)
+(test-eq (rule-3b 111122) #t)
+(test-eq (rule-3b 111111) #f)
+(test-eq (rule-3b 123444) #f)
+
+(test-end "puzzle-2")
