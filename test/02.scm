@@ -22,4 +22,8 @@
 (test-eq (eval-inst 4 p *) 8)
 (test-equal p #(3500 9 10 70 2 3 11 0 99 30 40 50))
 
+(set! p (vector 1 0 0 0 99))
+(run-program p)
+(test-equal p #(2 0 0 0 99))
+
 (test-end "puzzle-1")

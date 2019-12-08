@@ -6,7 +6,8 @@
 (define-module (aoc d02)
   #:export (parse-program
             eval-inst
-            run-inst))
+            run-inst
+            run-program))
 
 (use-modules (ice-9 rdelim))
 
@@ -28,5 +29,9 @@
     ((1) (eval-inst i p +))
     ((2) (eval-inst i p *))
     ((99) -1)))
+
+(define (run-program p)
+  (do ((i 0 (+ i (run-inst i p))))
+      ((positive? i) p)))
 
 (set-current-input-port (open-input-file "input/d02"))
