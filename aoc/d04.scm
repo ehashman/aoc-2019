@@ -15,19 +15,33 @@
 (define upper-input 789860)
 
 (define (get-digits n)
-  (map (compose string->number string) (string->list n)))
+  (map (compose string->number string)
+       (string->list (number->string n))))
 
+;; By only considering input between {lower,upper}-input, we already
+;; satisfy both these rules.
+
+;; Rule 1: 6 digit length
 ;; (define rule-1 (lambda (n) (and (> n 99999) (< n 1000000))))
+
+;; Rule 2: Must be within input bounds
 ;; (define rule-2 (lambda (n) (and (> n lower-input) (< n upper-input))))
 
+;; Rule 3: Must have two repeated digits
 (define (rule-3 n)
   (cdr (fold (lambda (l r)
                (cons l (or (eq? l (car r)) (cdr r))))
              '(0 . #f)
              (get-digits n))))
 
+;; Rule 4: Digits must be in ascending order
 (define (rule-4 n)
   (cdr (fold (lambda (l r)
                (cons l (and (>= l (car r)) (cdr r))))
              '(0 . #t)
              (get-digits n))))
+
+(display
+ (length (filter (lambda (x) (and (rule-3 x) (rule-4 x)))
+                 (iota (- upper-input lower-input) lower-input))))
+(newline)
