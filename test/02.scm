@@ -26,4 +26,20 @@
 (run-program p)
 (test-equal p #(2 0 0 0 99))
 
+(set! p (vector 2 3 0 3 99))
+(run-program p)
+(test-equal p #(2 3 0 6 99))
+
+(set! p (vector 2 4 4 5 99 0))
+(run-program p)
+(test-equal p #(2 4 4 5 99 9801))
+
+(set! p (vector 1 1 1 4 99 5 6 0 99))
+(run-program p)
+(test-equal p #(30 1 1 4 2 5 6 0 99))
+
+(set! p (vector-copy program))
+(run-program p)
+(test-equal p #(3500 9 10 70 2 3 11 0 99 30 40 50))
+
 (test-end "puzzle-1")

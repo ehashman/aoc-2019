@@ -31,7 +31,7 @@
     ((99) -1)))
 
 (define (run-program p)
-  (do ((i 0 (+ i (run-inst i p))))
-      ((positive? i) p)))
+  (do ((i 0 (run-inst i p)))
+      ((eqv? i -1) p)))
 
 (set-current-input-port (open-input-file "input/d02"))
