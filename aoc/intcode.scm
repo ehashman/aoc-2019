@@ -12,6 +12,14 @@
 
 (use-modules (ice-9 rdelim))
 
+(define (normalize-bool b)
+  (if b 1 0))
+
+(define (get-value mode p l)
+  (if (eqv? mode 1)
+    l
+    (vector-ref p l)))
+
 (define (parse-program p)
   (list->vector (map string->number (string-split p #\,))))
 
@@ -22,8 +30,8 @@
          (modes (quotient (vector-ref p i) 100))
          (m1  (remainder modes 10))
          (m2  (remainder (quotient modes 10) 10))
-         (v1  (if (eqv? m1 1) l1 (vector-ref p l1)))
-         (v2  (if (eqv? m2 1) l2 (vector-ref p l2))))
+         (v1  (get-value m1 p l1))
+         (v2  (get-value m2 p l2)))
     (vector-set! p dst (f v1 v2))
     (+ i 4)))
 
@@ -37,9 +45,12 @@
   (let* ((dst (vector-ref p (+ i 1)))
          (modes (quotient (vector-ref p i) 100))
          (m1  (remainder modes 10)))
-    (display (if (eqv? m1 1) dst (vector-ref p dst)))
+    (display (get-value m1 p dst))
     (newline)
     (+ i 2)))
+
+(define (jump i p pred)
+  i)
 
 (define (run-inst i p)
   (case (remainder (vector-ref p i) 100)
@@ -47,6 +58,10 @@
     ((2) (eval-inst i p *))
     ((3) (get-input i p))
     ((4) (write-output i p))
+    ((5) (jump i p (not zero?)))
+    ((6) (jump i p zero?))
+    ((7) (eval-inst i p (compose normalize-bool <)))
+    ((8) (eval-inst i p (compose normalize-bool eqv?)))
     ((99) -1)))
 
 (define (run-program p)
