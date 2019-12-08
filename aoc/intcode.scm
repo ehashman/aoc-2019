@@ -7,7 +7,8 @@
   #:export (parse-program
             eval-inst
             run-inst
-            run-program))
+            run-program
+            write-output))
 
 (use-modules (ice-9 rdelim))
 
@@ -30,7 +31,10 @@
     (+ i 2)))
 
 (define (write-output i p)
-  (+ i 2))
+  (let ((dst (vector-ref p (+ i 1))))
+    (display (vector-ref p dst))
+    (newline)
+    (+ i 2)))
 
 (define (run-inst i p)
   (case (vector-ref p i)

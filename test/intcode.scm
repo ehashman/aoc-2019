@@ -43,9 +43,18 @@
 (run-program p)
 (test-equal p #(3500 9 10 70 2 3 11 0 99 30 40 50))
 
+; test input
 (set! p (vector 3 0 99))
 (set-current-input-port (open-input-string "666"))
 (run-program p)
 (test-equal p #(666 0 99))
+
+; test output
+(define stdout (current-output-port))
+(define my-output (open-output-string))
+(set-current-output-port my-output)
+(write-output 0 #(4 3 99 666))
+(set-current-output-port stdout)
+(test-equal (get-output-string my-output) "666\n")
 
 (test-end "intcode-checker")
