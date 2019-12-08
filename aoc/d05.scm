@@ -12,6 +12,6 @@
              (aoc intcode))
 
 ;; Test input/output
-(run-program (vector 3 0 4 0 99))
+; (run-program (vector 3 0 4 0 99))
 
-; (run-program (parse-program (read-line (open-input-file "input/d05"))))
+(run-program (parse-program (read-line (open-input-file "input/d05"))))

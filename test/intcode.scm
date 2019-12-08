@@ -57,4 +57,21 @@
 (set-current-output-port stdout)
 (test-equal (get-output-string my-output) "666\n")
 
+; test mode switching
+(set! p (vector 1002 4 3 4 33))
+(run-program p)
+(test-equal p #(1002 4 3 4 99))
+
+; test negative ints
+(set! p (vector 1101 100 -1 4 0))
+(run-program p)
+(test-equal p #(1101 100 -1 4 99))
+
+; test immediate mode for output
+(set! my-output (open-output-string))
+(set-current-output-port my-output)
+(write-output 0 #(104 666 99))
+(set-current-output-port stdout)
+(test-equal (get-output-string my-output) "666\n")
+
 (test-end "intcode-checker")
