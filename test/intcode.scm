@@ -2,7 +2,8 @@
 -L . --use-srfi=64
 !#
 
-(use-modules (aoc intcode))
+(use-modules (ice-9 rdelim)
+             (aoc intcode))
 
 (test-begin "intcode-checker")
 
@@ -41,5 +42,10 @@
 (set! p (vector-copy program))
 (run-program p)
 (test-equal p #(3500 9 10 70 2 3 11 0 99 30 40 50))
+
+(set! p (vector 3 0 99))
+(set-current-input-port (open-input-string "666"))
+(run-program p)
+(test-equal p #(666 0 99))
 
 (test-end "intcode-checker")
