@@ -15,13 +15,13 @@
   (set-current-output-port my-output)
   (run-program p)
   (set-current-output-port stdout)
-  (test-equal (get-output-string my-output) output))
+  (test-equal output (get-output-string my-output)))
 
 (test-begin "intcode-checker")
 
-(test-equal (parse-program "1,0,0,0,99") #(1 0 0 0 99))
-(test-equal (parse-program "1,1,1,4,99,5,6,0,99")
-            #(1 1 1 4 99 5 6 0 99))
+(test-equal #(1 0 0 0 99) (parse-program "1,0,0,0,99"))
+(test-equal #(1 1 1 4 99 5 6 0 99)
+            (parse-program "1,1,1,4,99,5,6,0,99"))
 
 (define program #(1 9 10 3 2 3 11 0 99 30 40 50))
 
@@ -29,11 +29,11 @@
 
 ; i = 0, opcode is 1, add
 (test-eq (eval-inst 0 p +) 4)
-(test-equal p #(1 9 10 70 2 3 11 0 99 30 40 50))
+(test-equal #(1 9 10 70 2 3 11 0 99 30 40 50) p)
 
 ; i = 4, opcode is 2, multiply
 (test-eq (eval-inst 4 p *) 8)
-(test-equal p #(3500 9 10 70 2 3 11 0 99 30 40 50))
+(test-equal #(3500 9 10 70 2 3 11 0 99 30 40 50) p)
 
 ; test sample programs
 (set! p (vector 1 0 0 0 99))
@@ -60,7 +60,7 @@
 (set-current-output-port my-output)
 (write-output 0 #(4 3 99 666))
 (set-current-output-port stdout)
-(test-equal (get-output-string my-output) "666\n")
+(test-equal "666\n" (get-output-string my-output))
 
 ; test mode switching
 (set! p (vector 1002 4 3 4 33))
@@ -75,20 +75,20 @@
 (set! my-output (open-output-string))
 (set-current-output-port my-output)
 (run-program p)
-(test-equal (get-output-string my-output) "1219070632396864\n")
+(test-equal "1219070632396864\n" (get-output-string my-output))
 
 (set! p (vector 104 1125899906842624 99))
 (set! my-output (open-output-string))
 (set-current-output-port my-output)
 (run-program p)
-(test-equal (get-output-string my-output) "1125899906842624\n")
+(test-equal "1125899906842624\n" (get-output-string my-output))
 
 ; test immediate mode for output
 (set! my-output (open-output-string))
 (set-current-output-port my-output)
 (write-output 0 #(104 666 99))
 (set-current-output-port stdout)
-(test-equal (get-output-string my-output) "666\n")
+(test-equal "666\n" (get-output-string my-output))
 
 ; more sample programs
 (test-program-with-io (vector 3 9 8 9 10 9 4 9 99 -1 8) "8" "1\n")
