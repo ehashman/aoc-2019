@@ -68,6 +68,19 @@
 (run-program p)
 (test-equal p #(1101 100 -1 4 99))
 
+; test large numbers
+(set! p (vector 1102 34915192 34915192 7 4 7 99 0))
+(set! my-output (open-output-string))
+(set-current-output-port my-output)
+(run-program p)
+(test-equal (get-output-string my-output) "1219070632396864\n")
+
+(set! p (vector 104 1125899906842624 99))
+(set! my-output (open-output-string))
+(set-current-output-port my-output)
+(run-program p)
+(test-equal (get-output-string my-output) "1125899906842624\n")
+
 ; test immediate mode for output
 (set! my-output (open-output-string))
 (set-current-output-port my-output)
