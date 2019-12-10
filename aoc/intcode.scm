@@ -22,9 +22,11 @@
           (remainder (quotient m 10) 10))))
 
 (define (get-value mode p l)
-  (if (eqv? mode 1)
-    l
-    (vector-ref p l)))
+  (let ((len (vector-length p)))
+    (case mode
+      ((0) (if (> l len) (hash-ref (vector-ref p len) l 0)
+                         (vector-ref p l)))
+      ((1) l))))
 
 (define (parse-program p)
   (list->vector (map string->number (string-split p #\,))))
@@ -79,6 +81,17 @@
     ((8) (eval-inst i p (compose normalize-bool eqv?)))
     ((99) -1)))
 
+(define (prepare-program p)
+  (let* ((l  (vector-length p))
+         (p0 (make-vector (1+ l))))
+    (vector-move-left! p 0 l p0 0)
+    (set! p p0)
+    (vector-set! p l (make-hash-table))))  ;; add some RAM
+
 (define (run-program p)
+  (prepare-program p)
+  (actually-run-program p))
+
+(define (actually-run-program p)
   (do ((i 0 (run-inst i p)))
       ((eqv? i -1) p)))
