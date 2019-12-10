@@ -12,12 +12,16 @@
 
 (use-modules (ice-9 rdelim))
 
+(define (parse-program p)
+  (list->vector (map string->number (string-split p #\,))))
+
+;;;; Helper functions ;;;;
 (define (normalize-bool b)
   (if b 1 0))
 
-;; Just support a pair of modes for now
 (define (modes o)
   (let ((m (quotient o 100)))
+    ; just support a pair of modes for now
     (cons (remainder m 10)
           (remainder (quotient m 10) 10))))
 
@@ -34,9 +38,7 @@
       (hash-set! (vector-ref p (1- len)) l v)
       (vector-set! p l v))))
 
-(define (parse-program p)
-  (list->vector (map string->number (string-split p #\,))))
-
+;;;; Run code ;;;;
 (define (eval-inst i p f)
   (let* ((l1  (vector-ref p (+ i 1)))
          (l2  (vector-ref p (+ i 2)))
@@ -87,22 +89,24 @@
     ((8) (eval-inst i p (compose normalize-bool eqv?)))
     ((99) -1)))
 
+(define (actually-run-program p)
+  (do ((i 0 (run-inst i p)))
+      ((eqv? i -1) (drop-memory p))))
+
+;;;; Some paperwork ;;;;
 (define (prepare-program p)
   (let* ((l  (vector-length p))
          (p0 (make-vector (1+ l))))
     (vector-move-left! p 0 l p0 0)
-    (vector-set! p0 l (make-hash-table))
-    p0))  ;; add some RAM
+    (vector-set! p0 l (make-hash-table)) ;; add some RAM
+    p0))
 
 (define (drop-memory p)
   (let* ((l  (vector-length p))
          (p0 (make-vector (1- l))))
-    (vector-move-left! p 0 (1- l) p0 0)
-    p0))
+    (when (hash-table? (vector-ref p (1- l)))  ;; drop the RAM, if it exists
+      (vector-move-left! p 0 (1- l) p0 0)
+      p0)))
 
 (define (run-program p)
   (actually-run-program (prepare-program p)))
-
-(define (actually-run-program p)
-  (do ((i 0 (run-inst i p)))
-      ((eqv? i -1) (drop-memory p))))
