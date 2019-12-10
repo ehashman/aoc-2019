@@ -24,9 +24,15 @@
 (define (get-value mode p l)
   (let ((len (vector-length p)))
     (case mode
-      ((0) (if (> l len) (hash-ref (vector-ref p len) l 0)
-                         (vector-ref p l)))
+      ((0) (if (>= l len) (hash-ref (vector-ref p (1- len)) l 0)
+                          (vector-ref p l)))
       ((1) l))))
+
+(define (set-value p l v)
+  (let ((len (vector-length p)))
+    (if (>= l len)
+      (hash-set! (vector-ref p (1- len)) l v)
+      (vector-set! p l v))))
 
 (define (parse-program p)
   (list->vector (map string->number (string-split p #\,))))
@@ -40,13 +46,13 @@
          (m2  (cdr ms))
          (v1  (get-value m1 p l1))
          (v2  (get-value m2 p l2)))
-    (vector-set! p dst (f v1 v2))
+    (set-value p dst (f v1 v2))
     (+ i 4)))
 
 (define (get-input i p)
   (let ((dst (vector-ref p (+ i 1)))
         (input (string->number (read-line))))
-    (vector-set! p dst input)
+    (set-value p dst input)
     (+ i 2)))
 
 (define (write-output i p)
@@ -85,13 +91,18 @@
   (let* ((l  (vector-length p))
          (p0 (make-vector (1+ l))))
     (vector-move-left! p 0 l p0 0)
-    (set! p p0)
-    (vector-set! p l (make-hash-table))))  ;; add some RAM
+    (vector-set! p0 l (make-hash-table))
+    p0))  ;; add some RAM
+
+(define (drop-memory p)
+  (let* ((l  (vector-length p))
+         (p0 (make-vector (1- l))))
+    (vector-move-left! p 0 (1- l) p0 0)
+    p0))
 
 (define (run-program p)
-  (prepare-program p)
-  (actually-run-program p))
+  (actually-run-program (prepare-program p)))
 
 (define (actually-run-program p)
   (do ((i 0 (run-inst i p)))
-      ((eqv? i -1) p)))
+      ((eqv? i -1) (drop-memory p))))
