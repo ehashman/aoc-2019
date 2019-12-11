@@ -10,7 +10,8 @@
             run-program
             write-output))
 
-(use-modules (ice-9 rdelim))
+(use-modules (ice-9 rdelim)
+             (srfi srfi-1))
 
 (define (parse-program p)
   (list->vector (map string->number (string-split p #\,))))
@@ -21,9 +22,9 @@
 
 (define (modes o)
   (let ((m (quotient o 100)))
-    ; just support a pair of modes for now
-    (cons (remainder m 10)
-          (remainder (quotient m 10) 10))))
+    (list (remainder m 10)
+          (remainder (quotient m 10) 10)
+          (remainder (quotient m 100) 10))))
 
 (define (address-in-ram? len l ram)
   (and (>= l (1- len)) (hash-table? ram)))
@@ -41,12 +42,17 @@
       ((1) l)
       ((2) (fetch-val p len (+ l rb) ram)))))
 
-(define (set-value p l v)
+(define (set-value mode p l v rb)
   (let* ((len (vector-length p))
-         (ram (vector-ref p (1- len))))
-    (if (address-in-ram? len l ram)
-      (hash-set! ram l v)
-      (vector-set! p l v))))
+         (ram (vector-ref p (1- len)))
+         (set-val
+          (lambda (p len l v ram)
+            (if (address-in-ram? len l ram)
+              (hash-set! ram l v)
+              (vector-set! p l v)))))
+    (case mode
+      ((0) (set-val p len l v ram))
+      ((2) (set-val p len (+ l rb) v ram)))))
 
 ;;;; Run code ;;;;
 (define (eval-inst i p f)
@@ -56,19 +62,22 @@
          (l2  (vector-ref p (+ ip 2)))
          (dst (vector-ref p (+ ip 3)))
          (ms  (modes (vector-ref p ip)))
-         (m1  (car ms))
-         (m2  (cdr ms))
+         (m1  (first ms))
+         (m2  (second ms))
+         (m3  (third ms))
          (v1  (get-value m1 p l1 rb))
          (v2  (get-value m2 p l2 rb)))
-    (set-value p dst (f v1 v2))
+    (set-value m3 p dst (f v1 v2) rb)
     (cons (+ ip 4) rb)))
 
 (define (get-input i p)
   (let* ((ip  (car i))
          (rb  (cdr i))
          (dst (vector-ref p (+ ip 1)))
+         (ms  (modes (vector-ref p ip)))
+         (m1  (car ms))
          (input (string->number (read-line))))
-    (set-value p dst input)
+    (set-value m1 p dst input rb)
     (cons (+ ip 2) rb)))
 
 (define (write-output i p)
@@ -87,8 +96,8 @@
          (l1 (vector-ref p (+ ip 1)))
          (l2 (vector-ref p (+ ip 2)))
          (ms (modes (vector-ref p ip)))
-         (m1 (car ms))
-         (m2 (cdr ms))
+         (m1 (first ms))
+         (m2 (second ms))
          (v1 (get-value m1 p l1 rb))
          (v2 (get-value m2 p l2 rb)))
     (if (pred v1)

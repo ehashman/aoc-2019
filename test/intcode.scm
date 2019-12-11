@@ -132,4 +132,11 @@
   (vector 109 1 204 -1 1001 100 1 100 1008 100 16 101 1006 101 0 99)
   "109\n1\n204\n-1\n1001\n100\n1\n100\n1008\n100\n16\n101\n1006\n101\n0\n99\n")
 
+(test-program-with-i (vector 203 0 99) "666" #(666 0 99))
+(test-program-with-i (vector 109 2 203 -2 99) "666" #(666 2 203 -2 99))
+
+; test relative mode for ternary instructions
+(test-program-with-i (vector 109 5 21101 1 2 4 3 7 99 123) "3"
+                     (vector 109 5 21101 1 2 4 3 3 99 3))
+
 (test-end "intcode-checker")
