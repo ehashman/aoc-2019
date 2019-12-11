@@ -14,3 +14,10 @@
 (define p (parse-program (read-line (open-input-file "input/d09"))))
 (set-current-input-port (open-input-string "1"))
 (run-program p)
+(newline)
+
+;; Problem 2
+
+(set-current-input-port (open-input-string "2"))
+(run-program p)
+(newline)
