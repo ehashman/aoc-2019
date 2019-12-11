@@ -117,5 +117,7 @@
 (test-program-with-io (vector 3 100 3 42 3 86 3 20 3 12345678 4 12345678 99)
                       "38502\n284752\n123\n0\n666"
                       "666\n")
+(test-program-with-io (vector 3 0 4 5 99) "123" "0\n")
+(test-program-with-io (vector 3 7 4 7 4 100 99) "123" "123\n0\n")
 
 (test-end "intcode-checker")

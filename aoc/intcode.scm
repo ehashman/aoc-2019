@@ -26,16 +26,19 @@
           (remainder (quotient m 10) 10))))
 
 (define (get-value mode p l)
-  (let ((len (vector-length p)))
+  (let* ((len (vector-length p))
+         (ram (vector-ref p (1- len))))
     (case mode
-      ((0) (if (>= l len) (hash-ref (vector-ref p (1- len)) l 0)
-                          (vector-ref p l)))
+      ((0) (if (and (>= l (1- len)) (hash-table? ram))
+             (hash-ref ram l 0)
+             (vector-ref p l)))
       ((1) l))))
 
 (define (set-value p l v)
-  (let ((len (vector-length p)))
-    (if (>= l len)
-      (hash-set! (vector-ref p (1- len)) l v)
+  (let* ((len (vector-length p))
+         (ram (vector-ref p (1- len))))
+    (if (and (>= l (1- len)) (hash-table? ram))
+      (hash-set! ram l v)
       (vector-set! p l v))))
 
 ;;;; Run code ;;;;
