@@ -28,11 +28,11 @@
 (define p (vector-copy program))
 
 ; i = 0, opcode is 1, add
-(test-eq (eval-inst 0 p +) 4)
+(test-equal '(4 . 0) (eval-inst '(0 . 0) p +))
 (test-equal #(1 9 10 70 2 3 11 0 99 30 40 50) p)
 
 ; i = 4, opcode is 2, multiply
-(test-eq (eval-inst 4 p *) 8)
+(test-equal '(8 . 0) (eval-inst '(4 . 0) p *))
 (test-equal #(3500 9 10 70 2 3 11 0 99 30 40 50) p)
 
 ; test sample programs
@@ -58,7 +58,7 @@
 (define stdout (current-output-port))
 (define my-output (open-output-string))
 (set-current-output-port my-output)
-(write-output 0 #(4 3 99 666))
+(write-output '(0 . 0) #(4 3 99 666))
 (set-current-output-port stdout)
 (test-equal "666\n" (get-output-string my-output))
 
@@ -86,7 +86,7 @@
 ; test immediate mode for output
 (set! my-output (open-output-string))
 (set-current-output-port my-output)
-(write-output 0 #(104 666 99))
+(write-output '(0 . 0) #(104 666 99))
 (set-current-output-port stdout)
 (test-equal "666\n" (get-output-string my-output))
 
