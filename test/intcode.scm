@@ -9,6 +9,13 @@
   (set-current-input-port (open-input-string input))
   (test-equal expected (run-program p)))
 
+(define (test-program-with-o p output)
+  (set! my-output (open-output-string))
+  (set-current-output-port my-output)
+  (run-program p)
+  (set-current-output-port stdout)
+  (test-equal output (get-output-string my-output)))
+
 (define (test-program-with-io p input output)
   (set-current-input-port (open-input-string input))
   (set! my-output (open-output-string))
@@ -119,5 +126,10 @@
                       "666\n")
 (test-program-with-io (vector 3 0 4 5 99) "123" "0\n")
 (test-program-with-io (vector 3 7 4 7 4 100 99) "123" "123\n0\n")
+
+; test relative base
+(test-program-with-o
+  (vector 109 1 204 -1 1001 100 1 100 1008 100 16 101 1006 101 0 99)
+  "109\n1\n204\n-1\n1001\n100\n1\n100\n1008\n100\n16\n101\n1006\n101\n0\n99\n")
 
 (test-end "intcode-checker")
